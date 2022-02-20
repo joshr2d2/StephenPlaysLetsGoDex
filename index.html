@@ -105,14 +105,12 @@
 
         #nav li a.selected{
             color: #000 !important;
+            background: rgba(255,255,255,1);
         }
 
         #nav li a:hover{
-            text-decoration: none;
             color: rgb(27, 190, 182);
             background: rgba(255,255,255,1);
-            border-radius: 10px;
-            padding: 10px;
         }
 
         .monPic{
@@ -241,7 +239,7 @@
             if (mon['First Acquired Date'] == ''){
                 alertHTML.innerHTML = '<div id="alert"> <img loading=lazy class="monPicBig uncaught" src="pokemon/regular/'+ mon.Name.toLowerCase() + '.png" /><br><h2>'+ mon.NDex +' - '+mon.Name+'</h2><h3>Not yet caught.</h3><h4>&nbsp;</h4><br><br><ul id="nav"><li><a id="dexPrev" href="#" onclick="info(\''+selectedDex+'\',\''+ prev +'\');">&#8592;</a></li><li><a href="#" onclick="closeInfo();">Close</a></li><li><a id="dexNext" href="#" onclick="info(\''+selectedDex+'\',\''+ next +'\');">&#8594;</a></ul></div>';
             } else {
-                alertHTML.innerHTML = '<div id="alert"> <img loading=lazy class="monPicBig caught" src="pokemon/regular/'+ mon.Name.toLowerCase() + '.png" /><br><h2>'+ mon.NDex +' - '+mon.Name+'</h2><h3>('+mon.Nickname+' - '+mon.Flair+')</h3><h4>Caught: '+mon['First Acquired Date']+' '+mon['First Acquired Time']+'</h4><br><br><ul id="nav"><li><a id="dexPrev" href="#" onclick="info(\''+selectedDex+'\',\''+ prev +'\');">&#8592;</a></li><li><a href="#" onclick="closeInfo();">Close</a></li><li><a id="dexNext" href="#" onclick="info(\''+selectedDex+'\',\''+ next +'\');">&#8594;</a></ul></div>';
+                alertHTML.innerHTML = '<div id="alert"> <img loading=lazy class="monPicBig caught" src="pokemon/regular/'+ mon.Name.toLowerCase() + '.png" /><br><h2>'+ mon.NDex +' - '+mon.Name+'</h2><h3>'+mon.Nickname+' - '+mon.Flair+'</h3><h4>Caught: '+mon['First Acquired Date']+' '+mon['First Acquired Time']+'</h4><br><br><ul id="nav"><li><a id="dexPrev" href="#" onclick="info(\''+selectedDex+'\',\''+ prev +'\');">&#8592;</a></li><li><a href="#" onclick="closeInfo();">Close</a></li><li><a id="dexNext" href="#" onclick="info(\''+selectedDex+'\',\''+ next +'\');">&#8594;</a></ul></div>';
             }
             alertHTML.style.display = "block";
         }
