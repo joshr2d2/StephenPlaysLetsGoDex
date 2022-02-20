@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        html{
+            background: url('background.jpg') no-repeat center center fixed; 
+            background-size: cover;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        body{
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+        .blur{
+            backdrop-filter: blur(10px);
+        }
+        #bgBlur{
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: scroll;
+            z-index: -999;
+        }
+        .mon{
+            text-align: center;
+            padding: 10px;
+        }
+        #dex{
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.5);
+            border: 3px solid rgba(243,250,189,0.4);
+            position: relative;
+            margin-bottom: 15px;
+            padding-bottom: 20px;
+        }
+        #alertContainer{
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 100;
+            overflow: hidden;
+        }
+
+        #alert{
+            border-radius: 20px;
+            background: rgba(255,255,255,0.6);
+            padding-top: 0;
+            padding-right: 10px;
+            padding-bottom: 10px;
+            padding-left: 10px;
+            border: 3px solid rgba(243,250,189,0.8);
+            margin:auto;
+            max-width: 500px;
+            max-height: calc(100vh - 120px);
+            margin-top: 50px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            overflow-y: scroll;
+        }
+
+        .uncaught{
+            filter: grayscale(1);
+        }
+
+        #nav li{
+            display:inline;
+            margin-left: 10px;
+            margin-right: 10px;
+            text-align: center;
+        }
+
+        #nav li a{
+            text-decoration: none;
+            color: rgb(16, 119, 114);
+            background: rgba(255,255,255,0.8);
+            border-radius: 10px;
+            padding: 10px;
+            border: 1px solid #000;
+        }
+
+        #nav li a.selected{
+            color: #000 !important;
+        }
+
+        #nav li a:hover{
+            text-decoration: none;
+            color: rgb(27, 190, 182);
+            background: rgba(255,255,255,1);
+            border-radius: 10px;
+            padding: 10px;
+        }
+
+        .monPic{
+            image-rendering: pixelated;
+            width: 128px;
+            cursor: pointer;
+        }
+
+        .monPicBig{
+            image-rendering: pixelated;
+            max-width: 256px;
+            width: 100%;
+            margin: auto;
+        }
+
+        @media screen and (max-width: 485px) {
+            .monPic{
+                width: 96px;
+            }
+        }
+
+        @media screen and (max-width: 500px) {
+            #alert{
+                margin-left: 10px;
+                margin-right: 10px;
+            }
+        }
+
+        @media screen and (max-width: 700px) {
+            #nav li{
+                display:block;
+                padding: 20px;
+            }
+
+        }   
+        
+        #pageSelect a{
+            text-decoration: none;
+            color: rgb(16, 119, 114);
+            margin: 5px;
+        }
+
+        #pageSelect a:hover{
+            text-decoration: underline;
+            color: rgb(27, 190, 182);
+        }
+
+        ul {
+            padding:0;
+        }
+
+        #container{
+            margin: auto;
+            max-width: 1000px;
+        }
+        #navContainer{
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            border-radius: 20px;
+            background-image: radial-gradient( circle farthest-corner at 10% 20%, rgba(222,168,248,0.5) 0%, rgba(168,222,258,0.5) 21.9%, rgba(189,250,205,0.5) 35.6%, rgba(243,250,189,0.5) 53.9%, rgba(250,227,189,0.5) 66.8%, rgba(248,172,171,0.5) 95%, rgba(254,170,212,0.5) 99.9% );
+            border: 3px solid rgba(222,168,248,0.5);
+        }
+
+        #pageSelect{
+            width: 100%;
+            text-align: center;
+            padding-top: 20px;
+        }
+    </style>
+    <script src="papaparse.min.js"></script>
+    <script>
+        var dex = {};
+
+        function fetchData(key, url){
+            Papa.parse(url,{
+                    download: true,
+                    header: true,
+                    complete: results => {
+                        dex[key] = results;
+                        if (key == 'stephenDex'){
+                            populateDex('stephenDex', 0)
+                        }
+                    }
+                }
+            )
+        }
+
+        function info(selectedDex, selectedMon){
+            var mon = dex[selectedDex].data.find(x => x.NDex === selectedMon);
+            var alertHTML = document.getElementById('alertContainer');
+            if (mon['First Acquired Date'] == ''){
+                alertHTML.innerHTML = '<div id="alert"> <img loading=lazy class="monPicBig uncaught" src="pokemon/regular/'+ mon.Name.toLowerCase() + '.png" /><br><h2>'+ mon.NDex +' - '+mon.Name+'</h2><h3>Not yet caught.</h3><br><br><ul id="nav"><li><a href="#" onclick="closeInfo();">Close</a></li></ul></div>';
+            } else {
+                alertHTML.innerHTML = '<div id="alert"> <img loading=lazy class="monPicBig caught" src="pokemon/regular/'+ mon.Name.toLowerCase() + '.png" /><br><h2>'+ mon.NDex +' - '+mon.Name+'</h2><h3>('+mon.Nickname+' - '+mon.Flair+')</h3><h4>Caught: '+mon['First Acquired Date']+' '+mon['First Acquired Time']+'</h4><br><br><ul id="nav"><li><a href="#" onclick="closeInfo();">Close</a></li></ul></div>';
+            }
+            alertHTML.style.display = "block";
+        }
+
+        function infoViewer(selectedDex, selectedMon){
+            var mon = dex[selectedDex].data.find(x => x.NDex === selectedMon);
+            var alertHTML = document.getElementById('alertContainer');
+            if (mon['First Acquired Date'] == ''){
+                alertHTML.innerHTML = '<div id="alert"> <img loading=lazy class="monPicBig uncaught" src="pokemon/regular/'+ mon.Name.toLowerCase() + '.png" /><br><h2>'+ mon.NDex +' - '+mon.Name+'</h2><h3>Not yet caught.</h3><br><br><ul id="nav"><li><a href="#" onclick="closeInfo();">Close</a></li></ul></div>';
+            } else {
+                alertHTML.innerHTML = '<div id="alert"> <img loading=lazy class="monPicBig caught" src="pokemon/regular/'+ mon.Name.toLowerCase() + '.png" /><br><h2>'+ mon.NDex +' - '+mon.Name+'</h2><h3>First caught by: '+mon['First Caught By']+'</h3><h4>Caught: '+mon['First Acquired Date']+' '+mon['First Acquired Time']+'</h4><br><br><ul id="nav"><li><a href="#" onclick="closeInfo();">Close</a></li></ul></div>';
+            }
+            alertHTML.style.display = "block";
+        }
+
+        function infoViewerShiny(selectedDex, selectedMon){
+            var mon = dex[selectedDex].data.find(x => x.NDex === selectedMon);
+            var alertHTML = document.getElementById('alertContainer');
+            if (mon['First Acquired Date'] == ''){
+                alertHTML.innerHTML = '<div id="alert"> <img loading=lazy class="monPicBig uncaught" src="pokemon/shiny/'+ mon.Name.toLowerCase() + '.png" /><br><h2>'+ mon.NDex +' - '+mon.Name+'</h2><h3>Not yet caught.</h3><br><br><ul id="nav"><li><a href="#" onclick="closeInfo();">Close</a></li></ul></div>';
+            } else {
+                alertHTML.innerHTML = '<div id="alert"> <img loading=lazy class="monPicBig caught" src="pokemon/shiny/'+ mon.Name.toLowerCase() + '.png" /><br><h2>'+ mon.NDex +' - '+mon.Name+'</h2><h3>First caught by: '+mon['First Caught By']+'</h3><h4>Caught: '+mon['First Acquired Date']+' '+mon['First Acquired Time']+'</h4><br><br><ul id="nav"><li><a href="#" onclick="closeInfo();">Close</a></li></ul></div>';
+            }
+            alertHTML.style.display = "block";
+        }
+
+        function closeInfo(){
+            var alertHTML = document.getElementById('alertContainer');
+            alertHTML.style.display = "none";
+        }
+        
+        function populateDex(selectedDex, pageID){
+            var dexHTML = document.getElementById('dex');
+            var dexLi = document.getElementById(selectedDex + 'Li');
+            var sel = document.getElementsByClassName('selected');
+
+            while(sel.length > 0){
+                sel[0].classList.remove('selected');
+            }
+            dexLi.classList.add('selected');
+            dexHTML.innerHTML = "";
+
+            if (selectedDex == 'stephenDex' | selectedDex == 'malDex'){
+                dex[selectedDex].data.forEach(mon => {
+                    if (mon['First Acquired Date'] == ''){
+                        dexHTML.innerHTML += '<div class="mon" onclick="info(\'' + selectedDex + '\',\'' + mon.NDex + '\')"><img title="Uncaught" loading=lazy class="monPic uncaught" src="pokemon/regular/'+ mon.Name.toLowerCase() + '.png" /><br>' + mon.Name +'</div>';
+                    } else {
+                        dexHTML.innerHTML += '<div class="mon" onclick="info(\'' + selectedDex + '\',\'' + mon.NDex + '\')"><img title="Nickname: ' + mon.Nickname + ' &#10;Flair: ' + mon.Flair + '" loading=lazy class="monPic caught" src="pokemon/regular/'+ mon.Name.toLowerCase() + '.png" /><br>' + mon.Name +'</div>';
+                    }
+                });
+            } else if (selectedDex == 'viewerDex'){
+                pageNo = pageID;
+                pageNo++;
+                pages = Math.ceil(dex[selectedDex].data.length / 200);
+                var temp = '<div id="pageSelect">Page '+ pageNo +' of ' + pages + '<br>';
+                for (i = 0; i < pages; i++){
+                    temp += '<a href="#" onclick="populateDex(\'viewerDex\',' + i +')">'+ parseInt(i + 1) + '</a> '
+                }
+                temp += '</div>'
+                dexHTML.innerHTML += temp;
+                start = pageID * 200
+
+                if (pageID == pages){
+                    finish = dex[selectedDex].data.length;
+                } else{
+                    finish = pageID * 200 + 200
+                }
+
+                dex[selectedDex].data.slice(start, finish).forEach(mon => {
+                    if (mon['First Acquired Date'] == ''){
+                        dexHTML.innerHTML += '<div class="mon" onclick="infoViewer(\'' + selectedDex + '\',\'' + mon.NDex + '\')"><img title="Uncaught" loading=lazy class="monPic uncaught" src="pokemon/regular/'+ mon.Name.toLowerCase() + '.png" /><br>' + mon.Name +'</div>';
+                    } else {
+                        dexHTML.innerHTML += '<div class="mon" onclick="infoViewer(\'' + selectedDex + '\',\'' + mon.NDex + '\')"><img title="First caught by: ' + mon['First Caught By'] + '" loading=lazy class="monPic caught" src="pokemon/regular/'+ mon.Name.toLowerCase() + '.png" /><br>' + mon.Name +'</div>';
+                    }
+                });
+            } else {
+                pageNo = pageID;
+                pageNo++;
+                pages = Math.ceil(dex[selectedDex].data.length / 200);
+                var temp = '<div id="pageSelect">Page '+ pageNo +' of ' + pages + '<br>';
+                for (i = 0; i < pages; i++){
+                    temp += '<a href="#" onclick="populateDex(\'viewerShinyDex\',' + i +')">'+ parseInt(i + 1) + '</a> '
+                }
+                temp += '</div>'
+                dexHTML.innerHTML += temp;
+                start = pageID * 200
+
+                if (pageID == pages){
+                    finish = dex[selectedDex].data.length;
+                } else{
+                    finish = pageID * 200 + 200
+                }
+
+                dex[selectedDex].data.slice(start, finish).forEach(mon => {
+                    if (mon['First Acquired Date'] == ''){
+                        dexHTML.innerHTML += '<div class="mon" onclick="infoViewerShiny(\'' + selectedDex + '\',\'' + mon.NDex + '\')"><img title="Uncaught" loading=lazy class="monPic uncaught" src="pokemon/shiny/'+ mon.Name.toLowerCase() + '.png" /><br>' + mon.Name +'</div>';
+                    } else {
+                        dexHTML.innerHTML += '<div class="mon" onclick="infoViewerShiny(\'' + selectedDex + '\',\'' + mon.NDex + '\')"><img title="First caught by: ' + mon['First Caught By'] + '" loading=lazy class="monPic caught" src="pokemon/shiny/'+ mon.Name.toLowerCase() + '.png" /><br>' + mon.Name +'</div>';
+                    }
+                });
+            }
+        }
+        fetchData('stephenDex','https://docs.google.com/spreadsheets/d/e/2PACX-1vRPOhEFdns3Qj4CYpMfIL-3kDCHhT4XVLycJ770vAL3Axk-c815dHTNkO3jurn2MpUSh9J0rADmZtvn/pub?output=csv&gid=1225896761&single=true');
+        fetchData('malDex','https://docs.google.com/spreadsheets/d/e/2PACX-1vRPOhEFdns3Qj4CYpMfIL-3kDCHhT4XVLycJ770vAL3Axk-c815dHTNkO3jurn2MpUSh9J0rADmZtvn/pub?output=csv&gid=993679040&single=true')
+        fetchData('viewerDex','https://docs.google.com/spreadsheets/d/e/2PACX-1vRPOhEFdns3Qj4CYpMfIL-3kDCHhT4XVLycJ770vAL3Axk-c815dHTNkO3jurn2MpUSh9J0rADmZtvn/pub?output=csv&gid=268620842&single=true')
+        fetchData('viewerShinyDex','https://docs.google.com/spreadsheets/d/e/2PACX-1vRPOhEFdns3Qj4CYpMfIL-3kDCHhT4XVLycJ770vAL3Axk-c815dHTNkO3jurn2MpUSh9J0rADmZtvn/pub?output=csv&gid=731490909&single=true')
+    </script>
+</head>
+<body>
+    <div id="bgBlur" class="blur"></div>
+    <div id="alertContainer" style="display:none;"></div>
+    <div id="container">
+        <div id="navContainer">
+            <ul id="nav">
+                <li><a id="stephenDexLi" onclick="populateDex('stephenDex', 0)" href="#">Stephen's Dex</a></li>
+                <li><a id="malDexLi" onclick="populateDex('malDex', 0)" href="#">Mal's Dex</a></li>
+                <li><a id="viewerDexLi"onclick="populateDex('viewerDex', 0)" href="#">Viewer's Dex</a></li>
+                <li><a id="viewerShinyDexLi" onclick="populateDex('viewerShinyDex', 0)" href="#">Viewer's Shiny Dex</a></li>
+            </ul>
+        </div>
+        <br>
+        <div id="dex">
+        </div>
+        <div id="navContainer">
+            <ul id="nav">
+                <li><a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vRPOhEFdns3Qj4CYpMfIL-3kDCHhT4XVLycJ770vAL3Axk-c815dHTNkO3jurn2MpUSh9J0rADmZtvn/pubhtml#" target="_blank">View the spreadsheet</a></li>
+            </ul>
+        </div>
+    </div>
+</body>
