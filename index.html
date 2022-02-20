@@ -129,6 +129,10 @@
                 display:block;
                 padding: 20px;
             }
+            #alert #nav li{
+                display:inline;
+                padding: 0;
+            }
 
         }   
         
@@ -184,35 +188,99 @@
             )
         }
 
+        document.addEventListener('keydown', function(event) {
+            if(event.keyCode == 37) {
+                if (document.getElementById('alertContainer').style.display == 'block'){
+                    document.getElementById('dexPrev').click();
+                }
+            }
+            else if(event.keyCode == 39) {
+                if (document.getElementById('alertContainer').style.display == 'block'){
+                    document.getElementById('dexNext').click();
+                }
+            }
+        });
+
         function info(selectedDex, selectedMon){
             var mon = dex[selectedDex].data.find(x => x.NDex === selectedMon);
+
+            if (parseInt(selectedMon.substring(1)) == 1){
+                var prev = '#' + dex[selectedDex].data.length;
+            } else {
+                var temp = parseInt(selectedMon.substring(1));
+                temp--;
+                var prev = '#' + temp.toString().padStart(3, '00');
+            }
+
+            if (parseInt(selectedMon.substring(1)) == dex[selectedDex].data.length){
+                var next = '#' + '001';
+            } else {
+                var temp = parseInt(selectedMon.substring(1));
+                temp++;
+                var next = '#' + temp.toString().padStart(3, '00');
+            }
+
             var alertHTML = document.getElementById('alertContainer');
             if (mon['First Acquired Date'] == ''){
-                alertHTML.innerHTML = '<div id="alert"> <img loading=lazy class="monPicBig uncaught" src="pokemon/regular/'+ mon.Name.toLowerCase() + '.png" /><br><h2>'+ mon.NDex +' - '+mon.Name+'</h2><h3>Not yet caught.</h3><br><br><ul id="nav"><li><a href="#" onclick="closeInfo();">Close</a></li></ul></div>';
+                alertHTML.innerHTML = '<div id="alert"> <img loading=lazy class="monPicBig uncaught" src="pokemon/regular/'+ mon.Name.toLowerCase() + '.png" /><br><h2>'+ mon.NDex +' - '+mon.Name+'</h2><h3>Not yet caught.</h3><br><br><ul id="nav"><li><a id="dexPrev" href="#" onclick="info(\''+selectedDex+'\',\''+ prev +'\');">&#x2B05;</a></li><li><a href="#" onclick="closeInfo();">Close</a></li><li><a id="dexNext" href="#" onclick="info(\''+selectedDex+'\',\''+ next +'\');">&#x27A1;</a></ul></div>';
             } else {
-                alertHTML.innerHTML = '<div id="alert"> <img loading=lazy class="monPicBig caught" src="pokemon/regular/'+ mon.Name.toLowerCase() + '.png" /><br><h2>'+ mon.NDex +' - '+mon.Name+'</h2><h3>('+mon.Nickname+' - '+mon.Flair+')</h3><h4>Caught: '+mon['First Acquired Date']+' '+mon['First Acquired Time']+'</h4><br><br><ul id="nav"><li><a href="#" onclick="closeInfo();">Close</a></li></ul></div>';
+                alertHTML.innerHTML = '<div id="alert"> <img loading=lazy class="monPicBig caught" src="pokemon/regular/'+ mon.Name.toLowerCase() + '.png" /><br><h2>'+ mon.NDex +' - '+mon.Name+'</h2><h3>('+mon.Nickname+' - '+mon.Flair+')</h3><h4>Caught: '+mon['First Acquired Date']+' '+mon['First Acquired Time']+'</h4><br><br><ul id="nav"><li><a id="dexPrev" href="#" onclick="info(\''+selectedDex+'\',\''+ prev +'\');">&#x2B05;</a></li><li><a href="#" onclick="closeInfo();">Close</a></li><li><a id="dexNext" href="#" onclick="info(\''+selectedDex+'\',\''+ next +'\');">&#x27A1;</a></ul></div>';
             }
             alertHTML.style.display = "block";
         }
 
         function infoViewer(selectedDex, selectedMon){
             var mon = dex[selectedDex].data.find(x => x.NDex === selectedMon);
+
+            if (parseInt(selectedMon.substring(1)) == 1){
+                var prev = '#' + dex[selectedDex].data.length;
+            } else {
+                var temp = parseInt(selectedMon.substring(1));
+                temp--;
+                var prev = '#' + temp.toString().padStart(3, '00');
+            }
+
+            if (parseInt(selectedMon.substring(1)) == dex[selectedDex].data.length){
+                var next = '#' + '001';
+            } else {
+                var temp = parseInt(selectedMon.substring(1));
+                temp++;
+                var next = '#' + temp.toString().padStart(3, '00');
+            }
+
             var alertHTML = document.getElementById('alertContainer');
             if (mon['First Acquired Date'] == ''){
-                alertHTML.innerHTML = '<div id="alert"> <img loading=lazy class="monPicBig uncaught" src="pokemon/regular/'+ mon.Name.toLowerCase() + '.png" /><br><h2>'+ mon.NDex +' - '+mon.Name+'</h2><h3>Not yet caught.</h3><br><br><ul id="nav"><li><a href="#" onclick="closeInfo();">Close</a></li></ul></div>';
+                alertHTML.innerHTML = '<div id="alert"> <img loading=lazy class="monPicBig uncaught" src="pokemon/regular/'+ mon.Name.toLowerCase() + '.png" /><br><h2>'+ mon.NDex +' - '+mon.Name+'</h2><h3>Not yet caught.</h3><br><br><ul id="nav"><li><a id="dexPrev" href="#" onclick="info(\''+selectedDex+'\',\''+ prev +'\');">&#x2B05;</a></li><li><a href="#" onclick="closeInfo();">Close</a></li><li><a id="dexNext" href="#" onclick="info(\''+selectedDex+'\',\''+ next +'\');">&#x27A1;</a></ul></div>';
             } else {
-                alertHTML.innerHTML = '<div id="alert"> <img loading=lazy class="monPicBig caught" src="pokemon/regular/'+ mon.Name.toLowerCase() + '.png" /><br><h2>'+ mon.NDex +' - '+mon.Name+'</h2><h3>First caught by: '+mon['First Caught By']+'</h3><h4>Caught: '+mon['First Acquired Date']+' '+mon['First Acquired Time']+'</h4><br><br><ul id="nav"><li><a href="#" onclick="closeInfo();">Close</a></li></ul></div>';
+                alertHTML.innerHTML = '<div id="alert"> <img loading=lazy class="monPicBig caught" src="pokemon/regular/'+ mon.Name.toLowerCase() + '.png" /><br><h2>'+ mon.NDex +' - '+mon.Name+'</h2><h3>First caught by: '+mon['First Caught By']+'</h3><h4>Caught: '+mon['First Acquired Date']+' '+mon['First Acquired Time']+'</h4><br><br><ul id="nav"><li><a id="dexPrev" href="#" onclick="info(\''+selectedDex+'\',\''+ prev +'\');">&#x2B05;</a></li><li><a href="#" onclick="closeInfo();">Close</a></li><li><a id="dexNext" href="#" onclick="info(\''+selectedDex+'\',\''+ next +'\');">&#x27A1;</a></ul></div>';
             }
             alertHTML.style.display = "block";
         }
 
         function infoViewerShiny(selectedDex, selectedMon){
             var mon = dex[selectedDex].data.find(x => x.NDex === selectedMon);
+
+            if (parseInt(selectedMon.substring(1)) == 1){
+                var prev = '#' + dex[selectedDex].data.length;
+            } else {
+                var temp = parseInt(selectedMon.substring(1));
+                temp--;
+                var prev = '#' + temp.toString().padStart(3, '00');
+            }
+
+            if (parseInt(selectedMon.substring(1)) == dex[selectedDex].data.length){
+                var next = '#' + '001';
+            } else {
+                var temp = parseInt(selectedMon.substring(1));
+                temp++;
+                var next = '#' + temp.toString().padStart(3, '00');
+            }
+
             var alertHTML = document.getElementById('alertContainer');
             if (mon['First Acquired Date'] == ''){
-                alertHTML.innerHTML = '<div id="alert"> <img loading=lazy class="monPicBig uncaught" src="pokemon/shiny/'+ mon.Name.toLowerCase() + '.png" /><br><h2>'+ mon.NDex +' - '+mon.Name+'</h2><h3>Not yet caught.</h3><br><br><ul id="nav"><li><a href="#" onclick="closeInfo();">Close</a></li></ul></div>';
+                alertHTML.innerHTML = '<div id="alert"> <img loading=lazy class="monPicBig uncaught" src="pokemon/shiny/'+ mon.Name.toLowerCase() + '.png" /><br><h2>'+ mon.NDex +' - '+mon.Name+'</h2><h3>Not yet caught.</h3><br><br><ul id="nav"><li><a id="dexPrev" href="#" onclick="info(\''+selectedDex+'\',\''+ prev +'\');">&#x2B05;</a></li><li><a href="#" onclick="closeInfo();">Close</a></li><li><a id="dexNext" href="#" onclick="info(\''+selectedDex+'\',\''+ next +'\');">&#x27A1;</a></ul></div>';
             } else {
-                alertHTML.innerHTML = '<div id="alert"> <img loading=lazy class="monPicBig caught" src="pokemon/shiny/'+ mon.Name.toLowerCase() + '.png" /><br><h2>'+ mon.NDex +' - '+mon.Name+'</h2><h3>First caught by: '+mon['First Caught By']+'</h3><h4>Caught: '+mon['First Acquired Date']+' '+mon['First Acquired Time']+'</h4><br><br><ul id="nav"><li><a href="#" onclick="closeInfo();">Close</a></li></ul></div>';
+                alertHTML.innerHTML = '<div id="alert"> <img loading=lazy class="monPicBig caught" src="pokemon/shiny/'+ mon.Name.toLowerCase() + '.png" /><br><h2>'+ mon.NDex +' - '+mon.Name+'</h2><h3>First caught by: '+mon['First Caught By']+'</h3><h4>Caught: '+mon['First Acquired Date']+' '+mon['First Acquired Time']+'</h4><br><br><ul id="nav"><li><a id="dexPrev" href="#" onclick="info(\''+selectedDex+'\',\''+ prev +'\');">&#x2B05;</a></li><li><a href="#" onclick="closeInfo();">Close</a></li><li><a id="dexNext" href="#" onclick="info(\''+selectedDex+'\',\''+ next +'\');">&#x27A1;</a></ul></div>';
             }
             alertHTML.style.display = "block";
         }
