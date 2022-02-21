@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimal-ui">
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <meta name="apple-mobile-web-app-title" content="Let's Go Dex">
+    <title>Let's Go! Pokédex</title>
     <style>
         html{
             background: url('background.jpg') no-repeat center center fixed; 
@@ -313,6 +317,8 @@
             }
             dexLi.classList.add('selected');
             dexHTML.innerHTML = "";
+            console.log(sel[0].innerText);
+            document.title = sel[0].innerText + ' - Let\'s Go! Pokédex';
 
             if (selectedDex == 'stephenDex' | selectedDex == 'malDex'){
                 dex[selectedDex].data.forEach(mon => {
